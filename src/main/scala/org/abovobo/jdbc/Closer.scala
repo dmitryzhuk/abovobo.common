@@ -10,7 +10,18 @@
 
 package org.abovobo.jdbc
 
-class CloseableWrapper(closeable: java.lang.AutoCloseable) {
+/**
+ * Wraps [[java.lang.AutoCloseable]] providing method allowing to close
+ * given object without exception being thrown.
+ *
+ * @param closeable An instance of [[java.lang.AutoCloseable]] to wrap.
+ */
+class SilentCloseableWrapper(closeable: java.lang.AutoCloseable) {
+
+  /**
+   * Calls [[java.lang.AutoCloseable#close]] within try/catch block
+   * silently swallowing [[java.sql.SQLException]] if thrown.
+   */
   def dispose() {
     try {
       this.closeable.close()
@@ -21,16 +32,46 @@ class CloseableWrapper(closeable: java.lang.AutoCloseable) {
 }
 
 /**
- * Created by dmitryzhuk on 28.12.13.
+ * Defines implicit conversions for JDBC objects like [[java.sql.Connection]], [[java.sql.Statement]],
+ * [[java.sql.ResultSet]] into [[org.abovobo.jdbc.SilentCloseableWrapper]]. Also provides syntax sugar
+ * for [[java.sql.ResultSet]] usage.
  */
 object Closer {
 
-  implicit def wrapStatement(statement: java.sql.Statement) = new CloseableWrapper(statement)
+  /**
+   * Implicitely wraps [[java.sql.Connection]] with [[org.abovobo.jdbc.SilentCloseableWrapper]].
+   *
+   * @param connection JDBC connection to wrap.
+   * @return Wrapping instance of [[org.abovobo.jdbc.SilentCloseableWrapper]]
+   */
+  implicit def wrapConnection(connection: java.sql.Connection) = new SilentCloseableWrapper(connection)
 
-  implicit def wrapConnection(connection: java.sql.Connection) = new CloseableWrapper(connection)
+  /**
+   * Implicitely wraps [[java.sql.Statement]] with [[org.abovobo.jdbc.SilentCloseableWrapper]].
+   *
+   * @param statement SQL statement to wrap.
+   * @return Wrapping instance of [[org.abovobo.jdbc.SilentCloseableWrapper]]
+   */
+  implicit def wrapStatement(statement: java.sql.Statement) = new SilentCloseableWrapper(statement)
 
-  implicit def wrapResultSet(rs: java.sql.ResultSet) = new CloseableWrapper(rs)
+  /**
+   * Implicitely wraps [[java.sql.ResultSet]] with [[org.abovobo.jdbc.SilentCloseableWrapper]].
+   *
+   * @param rs result set to wrap.
+   * @return Wrapping instance of [[org.abovobo.jdbc.SilentCloseableWrapper]]
+   */
+  implicit def wrapResultSet(rs: java.sql.ResultSet) = new SilentCloseableWrapper(rs)
 
+  /**
+   * Executes given block of code, which uses [[java.sql.ResultSet]] instance,
+   * within try/finally and finally disposes [[java.sql.ResultSet]] instance
+   * by means of [[org.abovobo.jdbc.SilentCloseableWrapper]].
+   *
+   * @param rs  [[java.sql.ResultSet]] to use within code block.
+   * @param f   Actual code block to execute.
+   * @tparam T  Type of value returned by code block.
+   * @return    A value returned by code block.
+   */
   def using[T](rs: java.sql.ResultSet)(f: java.sql.ResultSet => T): T = {
     try {
       f(rs)
