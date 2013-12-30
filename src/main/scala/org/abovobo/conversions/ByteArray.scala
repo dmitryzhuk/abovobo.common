@@ -10,6 +10,8 @@
 
 package org.abovobo.conversions
 
+import scala.language.implicitConversions
+
 /**
  * Methods of this object allow to convert built-in integer types (Short, Int, Long)
  * into byte array and extract them back from byte array. Explicit methods allow to

@@ -16,14 +16,14 @@ package org.abovobo.jdbc
  *
  * @param rs An instance of [[java.sql.ResultSet]] to read values from.
  */
-private[jdbc] class ResultSetWrapper(rs: java.sql.ResultSet) {
+class ResultSetWrapper(rs: java.sql.ResultSet) {
 
   /**
    * Reads byte array at given index.
    * @param index An index to read value at.
    * @return None if value was NULL, Some otherwise.
    */
-  def getBytesOrNone(index: Int): Option[Array[Byte]] = {
+  def bytes(index: Int): Option[Array[Byte]] = {
     val result = this.rs.getBytes(index)
     if (this.rs.wasNull()) None else Some(result)
   }
@@ -33,7 +33,7 @@ private[jdbc] class ResultSetWrapper(rs: java.sql.ResultSet) {
    * @param name A name of column to read value from.
    * @return None if value was NULL, Some otherwise.
    */
-  def getBytesOrNone(name: String): Option[Array[Byte]] = {
+  def bytes(name: String): Option[Array[Byte]] = {
     val result = this.rs.getBytes(name)
     if (this.rs.wasNull()) None else Some(result)
   }
@@ -43,7 +43,7 @@ private[jdbc] class ResultSetWrapper(rs: java.sql.ResultSet) {
    * @param index An index to read value at.
    * @return None if value was NULL, Some otherwise.
    */
-  def getDateOrNone(index: Int): Option[java.util.Date] = {
+  def date(index: Int): Option[java.util.Date] = {
     val result = this.rs.getDate(index)
     if (this.rs.wasNull()) None else Some(result)
   }
@@ -53,7 +53,7 @@ private[jdbc] class ResultSetWrapper(rs: java.sql.ResultSet) {
    * @param name A name of column to read value from.
    * @return None if value was NULL, Some otherwise.
    */
-  def getDateOrNone(name: String): Option[java.util.Date] = {
+  def date(name: String): Option[java.util.Date] = {
     val result = this.rs.getDate(name)
     if (this.rs.wasNull()) None else Some(result)
   }
@@ -64,8 +64,11 @@ private[jdbc] class ResultSetWrapper(rs: java.sql.ResultSet) {
  */
 object Optional {
 
+  import scala.language.implicitConversions
+
   /**
    * Implicitely wraps given result set by [[org.abovobo.jdbc.ResultSetWrapper]].
+   *
    * @param rs An instance of [[java.sql.ResultSet]] to wrap
    * @return An instance of [[org.abovobo.jdbc.ResultSetWrapper]]
    */

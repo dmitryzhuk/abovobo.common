@@ -216,6 +216,8 @@ class Integer160(private val value: Array[Int]) {
 
 object Integer160 {
 
+  import scala.language.implicitConversions
+
   /** Implicit conversion from Byte to Integer160 */
   implicit def byte2integer160(v: Byte): Integer160 = new Integer160(v)
 

@@ -26,7 +26,7 @@ class SilentCloseableWrapper(closeable: java.lang.AutoCloseable) {
     try {
       this.closeable.close()
     } catch {
-      case java.sql.SQLException => // do nothing
+      case e: java.sql.SQLException => // do nothing
     }
   }
 }
@@ -37,6 +37,8 @@ class SilentCloseableWrapper(closeable: java.lang.AutoCloseable) {
  * for [[java.sql.ResultSet]] usage.
  */
 object Closer {
+
+  import scala.language.implicitConversions
 
   /**
    * Implicitely wraps [[java.sql.Connection]] with [[org.abovobo.jdbc.SilentCloseableWrapper]].
