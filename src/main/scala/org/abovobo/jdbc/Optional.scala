@@ -57,6 +57,26 @@ class ResultSetWrapper(rs: java.sql.ResultSet) {
     val result = this.rs.getDate(name)
     if (this.rs.wasNull()) None else Some(result)
   }
+
+  /**
+   * Reads [[java.util.Date]] at given index via [[java.sql.Timestamp]] for exact value.
+   * @param index An index to read value at.
+   * @return None if value was NULL, Some otherwise.
+   */
+  def timestamp(index: Int): Option[java.util.Date] = {
+    val result = this.rs.getTimestamp(index)
+    if (this.rs.wasNull()) None else Some(new java.util.Date(result.getTime))
+  }
+
+  /**
+   * Reads [[java.util.Date]] at given index via [[java.sql.Timestamp]] for exact value.
+   * @param name A name of column to read value from.
+   * @return None if value was NULL, Some otherwise.
+   */
+  def timestamp(name: String): Option[java.util.Date] = {
+    val result = this.rs.getTimestamp(name)
+    if (this.rs.wasNull()) None else Some(new java.util.Date(result.getTime))
+  }
 }
 
 /**
