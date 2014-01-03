@@ -17,7 +17,7 @@
         <maven.compiler.source>1.7</maven.compiler.source>
         <maven.compiler.target>1.7</maven.compiler.target>
         <encoding>UTF-8</encoding>
-        <scala.version>2.11.0-M7</scala.version>
+        <scala.version>2.10.3</scala.version>
     </properties>
 
     <dependencies>
@@ -27,12 +27,6 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>${scala.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.scala-lang.modules</groupId>
-            <artifactId>scala-xml_2.11.0-M7</artifactId>
-            <version>1.0.0-RC7</version>
         </dependency>
 
         <!-- Logging dependencies -->
@@ -64,7 +58,7 @@
 
         <dependency>
             <groupId>org.scalatest</groupId>
-            <artifactId>scalatest_2.11.0-M7</artifactId>
+            <artifactId>scalatest_2.10</artifactId>
             <version>2.0.1-SNAP4</version>
         </dependency>
 
