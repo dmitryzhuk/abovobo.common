@@ -15,8 +15,7 @@ import java.math.BigInteger
 import scala.annotation.tailrec
 import scala.util.Random
 
-import org.abovobo.codec.base32.Decoder
-import org.abovobo.codec.base32.Encoder
+import org.abovobo.conversions.Base32
 
 /**
  * Integer which has exactly 160 bits and treated as unsigned.
@@ -43,7 +42,7 @@ class Integer160(private val value: Array[Int]) {
     if (s.length == 40) Array.tabulate[Byte](Integer160.bytesize) { i =>
       (((Integer160.unhex(s(2 * i)) << 4) & 0xF0) | (Integer160.unhex(s(2 * i + 1)) & 0xF)).toByte
     }
-    else if (s.length == 32) Decoder.decode(s)
+    else if (s.length == 32) Base32.decode(s)
     else throw new IllegalArgumentException)
 
   /** Constructs random Integer160 */
@@ -200,7 +199,7 @@ class Integer160(private val value: Array[Int]) {
   override def toString = this.toHexString
 
   /** Converts to base32 encoded string */
-  def toBase32String = (new Encoder).encode(this.toArray)
+  def toBase32String = Base32.encode(this.toArray)
 
   /** Converts to binary representation string */
   def toBinaryString = this.value map { v =>
