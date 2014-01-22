@@ -130,5 +130,14 @@ class BencodeTest extends WordSpec with Matchers with BeforeAndAfterAll {
       }
     }
 
+    "`dli10e3:cowe` is decoded" must {
+      "produce decoding exception" in {
+        val iterator = Bencode.decode("dli10e3:cowe".getBytes("UTF-8"))
+        iterator.next() shouldBe a[Bencode.DictionaryBegin]
+        intercept[java.lang.IllegalArgumentException] {
+          iterator.next()
+        }
+      }
+    }
   }
 }
