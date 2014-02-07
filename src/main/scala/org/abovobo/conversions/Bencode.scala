@@ -16,6 +16,7 @@ import scala.collection.mutable
  * Implements Bencoding and Bdecoding providing API similar to StAX for decoding.
  */
 object Bencode {
+  // TODO implement encoding and complete documentation
 
   sealed trait Event
 
@@ -27,6 +28,14 @@ object Bencode {
   case class DictionaryEnd() extends Event
   case class ImpossibleFailure() extends Event
 
+  /**
+   * Decodes given sequence of bytes converting it into a sequence of events happened
+   * during decoding process.
+   *
+   * @param data a sequence of bytes to decode.
+   *
+   * @return Iterator through decoding events.
+   */
   def decode(data: IndexedSeq[Byte]): Iterator[Event] = {
 
     object State extends Enumeration {
