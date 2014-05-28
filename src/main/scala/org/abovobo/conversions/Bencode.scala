@@ -96,6 +96,7 @@ object Bencode {
                 stack.pop()
                 if (stack.top == State.DictionaryValue) stack.pop()
                 return DictionaryEnd()
+              case 'i' => stack.push(State.Integer)                
               case c: Byte if Character.isDigit(c.toChar) =>
                 stack.push(State.BytestringLength)
                 buf += b
@@ -106,6 +107,9 @@ object Bencode {
                 bslen = java.lang.Long.parseLong(new String(buf.toArray, "UTF-8"))
                 buf.clear()
                 stack.pop()
+                if (bslen == 0) {
+                  return Bytestring(Array[Byte]()) // no body will follow
+                }
                 stack.push(State.BytestringBody)
               case c: Byte if Character.isDigit(c.toChar) =>
                 buf += b

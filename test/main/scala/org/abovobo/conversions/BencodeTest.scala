@@ -129,6 +129,36 @@ class BencodeTest extends WordSpec with Matchers with BeforeAndAfterAll {
         iterator should be ('empty)
       }
     }
+    
+    "`d5:empty0:4:fulli1234ee`" must {
+      "produce empty bytestring" in {
+        val iterator = Bencode.decode("d5:empty0:4:fulli1234ee".getBytes("UTF-8"))
+        iterator.next() shouldBe a[Bencode.DictionaryBegin]
+        
+        val k1 = iterator.next() 
+        val v1 = iterator.next()
+        val k2 = iterator.next()
+        val v2 = iterator.next()
+        
+        k1 shouldBe a[Bencode.Bytestring]
+        v1 shouldBe a[Bencode.Bytestring]
+        k2 shouldBe a[Bencode.Bytestring]
+        v2 shouldBe a[Bencode.Integer]
+        
+        def bstr(e: Bencode.Event) = e.asInstanceOf[Bencode.Bytestring]
+        
+        def str(e: Bencode.Event) = new String(e.asInstanceOf[Bencode.Bytestring].value, "UTF-8")
+        
+        str(k1) should be ("empty")
+        bstr(v1).value.length should be (0)
+        
+        str(k2) should be ("full")
+        v2.asInstanceOf[Bencode.Integer].value should be (1234)
+        
+        iterator.next() shouldBe a[Bencode.DictionaryEnd]
+
+      }
+    }
 
     "`dli10e3:cowe` is decoded" must {
       "produce decoding exception" in {
