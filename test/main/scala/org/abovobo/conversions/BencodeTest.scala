@@ -90,6 +90,33 @@ class BencodeTest extends WordSpec with Matchers with BeforeAndAfterAll {
         iterator should be ('empty)
       }
     }
+    
+    "`` is decoded" must {
+      "produce an empty find_node response" in {
+        val events = Bencode.decode("d1:rd2:id20:123456789012345678905:nodes0:e1:t2:001:y1:re".getBytes("UTF-8")).toList
+        
+        val iterator = events.iterator
+        
+        iterator.next() shouldBe a[Bencode.DictionaryBegin]
+        iterator.next() shouldBe a[Bencode.Bytestring]
+        iterator.next() shouldBe a[Bencode.DictionaryBegin]
+        
+        iterator.next() shouldBe a[Bencode.Bytestring]
+        iterator.next() shouldBe a[Bencode.Bytestring]
+        iterator.next() shouldBe a[Bencode.Bytestring]
+        iterator.next() shouldBe a[Bencode.Bytestring]
+            
+        iterator.next() shouldBe a[Bencode.DictionaryEnd]
+
+        iterator.next() shouldBe a[Bencode.Bytestring]
+        iterator.next() shouldBe a[Bencode.Bytestring]
+
+        iterator.next() shouldBe a[Bencode.Bytestring]
+        iterator.next() shouldBe a[Bencode.Bytestring]
+
+        iterator.next() shouldBe a[Bencode.DictionaryEnd]
+      }
+    }
 
     "`d1:eli201e23:A Generic Error Ocurrede1:t2:aa1:y1:ee` is decoded" must {
       "produce dictionary of DHT Error message structure" in {

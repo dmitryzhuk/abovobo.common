@@ -51,8 +51,9 @@ object Bencode {
     var i = 0
     var bslen = 0L
 
-    def xthrow(b: Byte): Unit =
+    def xthrow(b: Byte): Unit = 
       throw new IllegalArgumentException("Invalid character " + b.toChar + " at " + (i - 1))
+    
 
     new Iterator[Event]() {
       override def hasNext = i < n
@@ -96,7 +97,6 @@ object Bencode {
                 stack.pop()
                 if (stack.top == State.DictionaryValue) stack.pop()
                 return DictionaryEnd()
-              case 'i' => stack.push(State.Integer)                
               case c: Byte if Character.isDigit(c.toChar) =>
                 stack.push(State.BytestringLength)
                 buf += b
@@ -108,7 +108,13 @@ object Bencode {
                 buf.clear()
                 stack.pop()
                 if (bslen == 0) {
-                  return Bytestring(Array[Byte]()) // no body will follow
+                  // no string body will follow
+                  stack.top match {
+                    case State.DictionaryValue => stack.pop()
+                    case State.Dictionary => stack.push(State.DictionaryValue)
+                    case _ => // do nothing
+                  }
+                  return Bytestring(Array[Byte]()) 
                 }
                 stack.push(State.BytestringBody)
               case c: Byte if Character.isDigit(c.toChar) =>
