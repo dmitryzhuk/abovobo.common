@@ -91,7 +91,7 @@ class BencodeTest extends WordSpec with Matchers with BeforeAndAfterAll {
       }
     }
     
-    "`` is decoded" must {
+    "`d1:rd2:id20:123456789012345678905:nodes0:e1:t2:001:y1:re` is decoded" must {
       "produce an empty find_node response" in {
         val events = Bencode.decode("d1:rd2:id20:123456789012345678905:nodes0:e1:t2:001:y1:re".getBytes("UTF-8")).toList
         
