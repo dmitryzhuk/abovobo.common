@@ -74,7 +74,7 @@ object Closer {
    * @tparam T  Type of value returned by code block.
    * @return    A value returned by code block.
    */
-  def using[T](rs: java.sql.ResultSet)(f: java.sql.ResultSet => T): T = {
+  def using[T, C <% SilentCloseableWrapper](rs: C)(f: C => T): T = {
     try {
       f(rs)
     } finally {
