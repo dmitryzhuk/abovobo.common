@@ -236,7 +236,7 @@ object Integer160 {
   val intsize = BitSizeOf.Integer160 / BitSizeOf.Int
 
   /** Constructs random Integer160 */
-  def random: Integer160 = new Integer160(new Random(System.currentTimeMillis))
+  def random: Integer160 = new Integer160(new Random())
 
   /** Returns 0 value */
   def zero: Integer160 = new Integer160(Array[Int](0, 0, 0, 0, 0))
