@@ -65,6 +65,14 @@ object Closer {
   implicit def wrapResultSet(rs: java.sql.ResultSet) = new SilentCloseableWrapper(rs)
 
   /**
+   * Implicitely wraps [[java.io.InputStream]] with [[org.abovobo.jdbc.SilentCloseableWrapper]].
+   *
+   * @param is input stream to wrap
+   * @return Wrapping instance of [[org.abovobo.jdbc.SilentCloseableWrapper]]
+   */
+  implicit def wrapInputStream(is: java.io.InputStream) = new SilentCloseableWrapper(is)
+
+  /**
    * Executes given block of code, which uses [[java.sql.ResultSet]] instance,
    * within try/finally and finally disposes [[java.sql.ResultSet]] instance
    * by means of [[org.abovobo.jdbc.SilentCloseableWrapper]].
