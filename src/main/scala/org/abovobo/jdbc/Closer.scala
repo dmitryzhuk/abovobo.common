@@ -26,22 +26,22 @@ class SilentCloseableWrapper(closeable: java.lang.AutoCloseable) {
     try {
       this.closeable.close()
     } catch {
-      case e: java.sql.SQLException => // do nothing
+      case t: Throwable => // do nothing
     }
   }
 }
 
 /**
  * Defines implicit conversions for JDBC objects like [[java.sql.Connection]], [[java.sql.Statement]],
- * [[java.sql.ResultSet]] into [[org.abovobo.jdbc.SilentCloseableWrapper]]. Also provides syntax sugar
- * for [[java.sql.ResultSet]] usage.
+ * [[java.sql.ResultSet]] and I/O ojbects like [[java.io.InputStream]] and [[java.io.Reader]]
+ * into [[org.abovobo.jdbc.SilentCloseableWrapper]].
  */
 object Closer {
 
   import scala.language.implicitConversions
 
   /**
-   * Implicitely wraps [[java.sql.Connection]] with [[org.abovobo.jdbc.SilentCloseableWrapper]].
+   * Implicitly wraps [[java.sql.Connection]] with [[org.abovobo.jdbc.SilentCloseableWrapper]].
    *
    * @param connection JDBC connection to wrap.
    * @return Wrapping instance of [[org.abovobo.jdbc.SilentCloseableWrapper]]
@@ -49,7 +49,7 @@ object Closer {
   implicit def wrapConnection(connection: java.sql.Connection) = new SilentCloseableWrapper(connection)
 
   /**
-   * Implicitely wraps [[java.sql.Statement]] with [[org.abovobo.jdbc.SilentCloseableWrapper]].
+   * Implicitly wraps [[java.sql.Statement]] with [[org.abovobo.jdbc.SilentCloseableWrapper]].
    *
    * @param statement SQL statement to wrap.
    * @return Wrapping instance of [[org.abovobo.jdbc.SilentCloseableWrapper]]
@@ -57,7 +57,7 @@ object Closer {
   implicit def wrapStatement(statement: java.sql.Statement) = new SilentCloseableWrapper(statement)
 
   /**
-   * Implicitely wraps [[java.sql.ResultSet]] with [[org.abovobo.jdbc.SilentCloseableWrapper]].
+   * Implicitly wraps [[java.sql.ResultSet]] with [[org.abovobo.jdbc.SilentCloseableWrapper]].
    *
    * @param rs result set to wrap.
    * @return Wrapping instance of [[org.abovobo.jdbc.SilentCloseableWrapper]]
@@ -65,7 +65,7 @@ object Closer {
   implicit def wrapResultSet(rs: java.sql.ResultSet) = new SilentCloseableWrapper(rs)
 
   /**
-   * Implicitely wraps [[java.io.InputStream]] with [[org.abovobo.jdbc.SilentCloseableWrapper]].
+   * Implicitly wraps [[java.io.InputStream]] with [[org.abovobo.jdbc.SilentCloseableWrapper]].
    *
    * @param is input stream to wrap
    * @return Wrapping instance of [[org.abovobo.jdbc.SilentCloseableWrapper]]
@@ -73,20 +73,28 @@ object Closer {
   implicit def wrapInputStream(is: java.io.InputStream) = new SilentCloseableWrapper(is)
 
   /**
+   * Implicitly wraps [[java.io.Reader]] with [[org.abovobo.jdbc.SilentCloseableWrapper]].
+   *
+   * @param r reader to wrap
+   * @return Wrapping instance of [[org.abovobo.jdbc.SilentCloseableWrapper]]
+   */
+  implicit def wrapReader(r: java.io.Reader) = new SilentCloseableWrapper(r)
+
+  /**
    * Executes given block of code, which uses [[java.sql.ResultSet]] instance,
    * within try/finally and finally disposes [[java.sql.ResultSet]] instance
    * by means of [[org.abovobo.jdbc.SilentCloseableWrapper]].
    *
-   * @param rs  [[java.sql.ResultSet]] to use within code block.
+   * @param param  [[SilentCloseableWrapper]] to use within code block.
    * @param f   Actual code block to execute.
    * @tparam T  Type of value returned by code block.
    * @return    A value returned by code block.
    */
-  def using[T, C <% SilentCloseableWrapper](rs: C)(f: C => T): T = {
+  def using[T, C <% SilentCloseableWrapper](param: C)(f: C => T): T = {
     try {
-      f(rs)
+      f(param)
     } finally {
-      rs.dispose()
+      param.dispose()
     }
   }
 }
