@@ -16,7 +16,7 @@ package org.abovobo.jdbc
  *
  * @param closeable An instance of [[java.lang.AutoCloseable]] to wrap.
  */
-class SilentCloseableWrapper(closeable: java.lang.AutoCloseable) {
+class SilentCloseableWrapper(closeable: AutoCloseable) {
 
   /**
    * Calls [[java.lang.AutoCloseable#close]] within try/catch block
