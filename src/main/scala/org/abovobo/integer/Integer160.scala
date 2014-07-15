@@ -104,7 +104,7 @@ class Integer160(private val value: Array[Int]) {
 
   /** Division operator. This can't be optimized to fixed number size, so just delegate this to BigInteger */
   def /(that: Integer160): Integer160 =
-    new Integer160(Integer160.pad(new BigInteger(1, this.toArray).divide(new BigInteger(1, this.toArray)).toByteArray))
+    new Integer160(Integer160.pad(new BigInteger(1, this.toArray).divide(new BigInteger(1, that.toArray)).toByteArray))
 
   /** Division remainder operator. This can't be optimized to fixed number size, so just delegate this to BigInteger */
   def %(that: Integer160): Integer160 =
