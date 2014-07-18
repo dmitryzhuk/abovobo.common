@@ -185,10 +185,7 @@ object Logger {
     }) // -- Thread.setDefaultUncaughtExceptionHandler
   }
 
-  val global = getLogger("org.abovobo.global")
-
   def getLogger(name: String) = new Logger {
     override val logger = org.slf4j.LoggerFactory.getLogger(name)
   }
-
 }
