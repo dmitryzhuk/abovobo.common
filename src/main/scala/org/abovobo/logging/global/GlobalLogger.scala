@@ -29,8 +29,8 @@ object GlobalLogger {
     import scala.concurrent._
     import ExecutionContext.Implicits.global
 
-    val threshold = 5 // should be more for real usage 
-    private val q = new ArrayBlockingQueue[Event](threshold * 3)
+    val threshold = 20 // should be more for real usage 
+    private val q = new ArrayBlockingQueue[Event](threshold * 5)
     
     {
       setName("Global")
@@ -59,9 +59,9 @@ object GlobalLogger {
     private def doFlush() {
       import collection.JavaConversions._
       // processing bunch of message at once: e.g. posting them to a web server
-      val buf = new ArrayList[Event](threshold * 2)
+      val buf = new ArrayList[Event](threshold * 5)
       q.drainTo(buf)
-      println(buf.map { e => "GlobalLog: " + e.getTimeStamp() + " " + e}.mkString("\n"))      
+      //println(buf.map { e => "GlobalLog: " + e.getTimeStamp() + " " + e}.mkString("\n"))      
     }
   }
 }
