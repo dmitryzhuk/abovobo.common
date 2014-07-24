@@ -54,7 +54,7 @@ object GlobalLogger {
       doFlush()
     }
     
-    private def flush() { future { doFlush() } }
+    private def flush() { Future { doFlush() } }
     
     private def doFlush() {
       import collection.JavaConversions._
