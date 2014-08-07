@@ -16,17 +16,70 @@ import scala.collection.mutable
  * Implements Bencoding and Bdecoding providing API similar to StAX for decoding.
  */
 object Bencode {
-  // TODO implement encoding and complete documentation
 
+  /** Parsing event base */
   sealed trait Event
 
+  /**
+   * Integer number occurred.
+   * @param value Actual value.
+   */
   case class Integer(value: Long) extends Event
+
+  /**
+   * Bytestring occurred.
+   * @param value Actual value.
+   */
   case class Bytestring(value: Array[Byte]) extends Event
-  case class ListBegin() extends Event
-  case class ListEnd() extends Event
-  case class DictionaryBegin() extends Event
-  case class DictionaryEnd() extends Event
-  case class ImpossibleFailure() extends Event
+
+  /**
+   * Simple string occurred (can only happen in encoding procedure).
+   * @param value Actual value.
+   */
+  case class JustString(value: String) extends Event
+
+  /**
+   * Simple character occurred (can only happen in encoding procedure).
+   * @param value Actual value.
+   */
+  case class Character(value: Char) extends Event
+
+  /** Indicates beginning of the list */
+  case object ListBegin extends Event
+
+  /** Indicates end of the list */
+  case object ListEnd extends Event
+
+  /** Indicates beginning of the dictionary */
+  case object DictionaryBegin extends Event
+
+  /** Indicates end of the dictionary */
+  case object DictionaryEnd extends Event
+
+  /** Indicates impossible situation */
+  case object ImpossibleFailure extends Event
+
+  /**
+   * Encodes given traversable collection of events into a sequence of bytes.
+   *
+   * @param events traversable collection of events to encode.
+   *
+   * @return sequence of bytes.
+   */
+  def encode(events: Traversable[Event]): IndexedSeq[Byte] = {
+    val buf = new mutable.ArrayBuffer[Byte]()
+    events foreach {
+      case DictionaryBegin => buf += 'd'
+      case ListBegin => buf += 'l'
+      case DictionaryEnd | ListEnd => buf += 'e'
+      case Character(c) => buf += '1' += ':' += c.toByte
+      case JustString(s) => buf ++= s.length.toString.getBytes("UTF-8") += ':' ++= s.getBytes("UTF-8")
+      case Integer(v) => buf += 'i' ++= v.toString.getBytes("UTF-8") += 'e'
+      case Bytestring(b) => buf ++= b.length.toString.getBytes("UTF-8") += ':' ++= b
+      case _ => throw new IllegalArgumentException("Invalid event")
+    }
+    buf
+  }
 
   /**
    * Decodes given sequence of bytes converting it into a sequence of events happened
@@ -65,12 +118,12 @@ object Bencode {
             case State.Begin | State.DictionaryValue => b match {
               case 'd' =>
                 stack.push(State.Dictionary)
-                return DictionaryBegin()
+                return DictionaryBegin
               case 'l' =>
                 stack.push(State.List)
-                return ListBegin()
+                return ListBegin
               case 'i' => stack.push(State.Integer)
-              case c: Byte if Character.isDigit(c.toChar) =>
+              case c: Byte if java.lang.Character.isDigit(c.toChar) =>
                 stack.push(State.BytestringLength)
                 buf += b
               case _ => xthrow(b)
@@ -79,15 +132,15 @@ object Bencode {
               case 'e' =>
                 stack.pop()
                 if (stack.top == State.DictionaryValue) stack.pop()
-                return ListEnd()
+                return ListEnd
               case 'd' =>
                 stack.push(State.Dictionary)
-                return DictionaryBegin()
+                return DictionaryBegin
               case 'l' =>
                 stack.push(State.List)
-                return ListBegin()
+                return ListBegin
               case 'i' => stack.push(State.Integer)
-              case c: Byte if Character.isDigit(c.toChar) =>
+              case c: Byte if java.lang.Character.isDigit(c.toChar) =>
                 stack.push(State.BytestringLength)
                 buf += b
               case _ => xthrow(b)
@@ -96,8 +149,8 @@ object Bencode {
               case 'e' =>
                 stack.pop()
                 if (stack.top == State.DictionaryValue) stack.pop()
-                return DictionaryEnd()
-              case c: Byte if Character.isDigit(c.toChar) =>
+                return DictionaryEnd
+              case c: Byte if java.lang.Character.isDigit(c.toChar) =>
                 stack.push(State.BytestringLength)
                 buf += b
               case _ => xthrow(b)
@@ -117,7 +170,7 @@ object Bencode {
                   return Bytestring(Array[Byte]()) 
                 }
                 stack.push(State.BytestringBody)
-              case c: Byte if Character.isDigit(c.toChar) =>
+              case c: Byte if java.lang.Character.isDigit(c.toChar) =>
                 buf += b
               case _ => xthrow(b)
             }
@@ -144,14 +197,14 @@ object Bencode {
                 return Integer(value)
               case '-' if buf.length == 0 =>
                 buf += b
-              case c: Byte if Character.isDigit(c.toChar) =>
+              case c: Byte if java.lang.Character.isDigit(c.toChar) =>
                 buf += b
               case _ => xthrow(b)
             }
           }
         }
         if (stack.top != State.Begin) throw new IllegalArgumentException("Invalid state " + stack.top)
-        ImpossibleFailure()
+        ImpossibleFailure
       }
     }
   }
