@@ -68,7 +68,7 @@ class BencodeTest extends WordSpec with Matchers with BeforeAndAfterAll {
       "produce list `cow`, 10, bang" in {
         val iterator = Bencode.decode("l3:cowi10e4:bange".getBytes("UTF-8"))
         iterator.next() match {
-          case Bencode.ListBegin => // it's ok
+          case Bencode.ListBegin() => // it's ok
           case _ => fail("Unexpected event")
         }
         iterator.next() match {
@@ -84,7 +84,7 @@ class BencodeTest extends WordSpec with Matchers with BeforeAndAfterAll {
           case _ => fail("Unexpected event")
         }
         iterator.next() match {
-          case Bencode.ListEnd => // it's ok
+          case Bencode.ListEnd() => // it's ok
           case _ => fail("Unexpected event")
         }
         iterator should be ('empty)
@@ -97,16 +97,16 @@ class BencodeTest extends WordSpec with Matchers with BeforeAndAfterAll {
         
         val iterator = events.iterator
         
-        iterator.next() should be (Bencode.DictionaryBegin)
+        iterator.next() shouldBe a[Bencode.DictionaryBegin]
         iterator.next() shouldBe a[Bencode.Bytestring]
-        iterator.next() should be (Bencode.DictionaryBegin)
+        iterator.next() shouldBe a[Bencode.DictionaryBegin]
         
         iterator.next() shouldBe a[Bencode.Bytestring]
         iterator.next() shouldBe a[Bencode.Bytestring]
         iterator.next() shouldBe a[Bencode.Bytestring]
         iterator.next() shouldBe a[Bencode.Bytestring]
             
-        iterator.next() should be (Bencode.DictionaryEnd)
+        iterator.next() shouldBe a[Bencode.DictionaryEnd]
 
         iterator.next() shouldBe a[Bencode.Bytestring]
         iterator.next() shouldBe a[Bencode.Bytestring]
@@ -114,19 +114,19 @@ class BencodeTest extends WordSpec with Matchers with BeforeAndAfterAll {
         iterator.next() shouldBe a[Bencode.Bytestring]
         iterator.next() shouldBe a[Bencode.Bytestring]
 
-        iterator.next() should be (Bencode.DictionaryEnd)
+        iterator.next() shouldBe a[Bencode.DictionaryEnd]
       }
     }
 
     "`d1:eli201e23:A Generic Error Ocurrede1:t2:aa1:y1:ee` is decoded" must {
       "produce dictionary of DHT Error message structure" in {
         val iterator = Bencode.decode("d1:eli201e23:A Generic Error Ocurrede1:t2:aa1:y1:ee".getBytes("UTF-8"))
-        iterator.next() should be (Bencode.DictionaryBegin)
+        iterator.next() shouldBe a[Bencode.DictionaryBegin]
         iterator.next() match {
           case Bencode.Bytestring(v) => new String(v, "UTF-8") should be("e")
           case _ => fail("Unexpected event")
         }
-        iterator.next() should be (Bencode.ListBegin)
+        iterator.next() shouldBe a[Bencode.ListBegin]
         iterator.next() match {
           case Bencode.Integer(v) => v should be(201)
           case _ => fail("Unexpected event")
@@ -135,7 +135,7 @@ class BencodeTest extends WordSpec with Matchers with BeforeAndAfterAll {
           case Bencode.Bytestring(v) => new String(v, "UTF-8") should be("A Generic Error Ocurred")
           case _ => fail("Unexpected event")
         }
-        iterator.next() should be (Bencode.ListEnd)
+        iterator.next() shouldBe a[Bencode.ListEnd]
         iterator.next() match {
           case Bencode.Bytestring(v) => new String(v, "UTF-8") should be("t")
           case _ => fail("Unexpected event")
@@ -152,7 +152,7 @@ class BencodeTest extends WordSpec with Matchers with BeforeAndAfterAll {
           case Bencode.Bytestring(v) => new String(v, "UTF-8") should be("e")
           case _ => fail("Unexpected event")
         }
-        iterator.next() should be (Bencode.DictionaryEnd)
+        iterator.next() shouldBe a[Bencode.DictionaryEnd]
         iterator should be ('empty)
       }
     }
@@ -160,7 +160,7 @@ class BencodeTest extends WordSpec with Matchers with BeforeAndAfterAll {
     "`d5:empty0:4:fulli1234ee`" must {
       "produce empty bytestring" in {
         val iterator = Bencode.decode("d5:empty0:4:fulli1234ee".getBytes("UTF-8"))
-        iterator.next() should be (Bencode.DictionaryBegin)
+        iterator.next() shouldBe a[Bencode.DictionaryBegin]
         
         val k1 = iterator.next() 
         val v1 = iterator.next()
@@ -182,7 +182,7 @@ class BencodeTest extends WordSpec with Matchers with BeforeAndAfterAll {
         str(k2) should be ("full")
         v2.asInstanceOf[Bencode.Integer].value should be (1234)
         
-        iterator.next() should be (Bencode.DictionaryEnd)
+        iterator.next() shouldBe a[Bencode.DictionaryEnd]
 
       }
     }
@@ -190,7 +190,7 @@ class BencodeTest extends WordSpec with Matchers with BeforeAndAfterAll {
     "`dli10e3:cowe` is decoded" must {
       "produce decoding exception" in {
         val iterator = Bencode.decode("dli10e3:cowe".getBytes("UTF-8"))
-        iterator.next() should be (Bencode.DictionaryBegin)
+        iterator.next() shouldBe a[Bencode.DictionaryBegin]
         intercept[java.lang.IllegalArgumentException] {
           iterator.next()
         }
