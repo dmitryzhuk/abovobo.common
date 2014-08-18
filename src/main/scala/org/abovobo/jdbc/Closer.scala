@@ -81,6 +81,14 @@ object Closer {
   implicit def wrapReader(r: java.io.Reader) = new SilentCloseableWrapper(r)
 
   /**
+   * Implicitly wraps any [[AutoCloseable]] with [[SilentCloseableWrapper]].
+   *
+   * @param ac AutoCloseable instance to wrap
+   * @return Wrapping instance of [[SilentCloseableWrapper]]
+   */
+  implicit def wrapAutoCloseable(ac: AutoCloseable) = new SilentCloseableWrapper(ac)
+
+  /**
    * Executes given block of code, which uses [[java.sql.ResultSet]] instance,
    * within try/finally and finally disposes [[java.sql.ResultSet]] instance
    * by means of [[org.abovobo.jdbc.SilentCloseableWrapper]].

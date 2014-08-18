@@ -27,7 +27,7 @@ object Transaction {
    */
   def transaction[T](c: java.sql.Connection)(f: => T): T = {
     try {
-      val t = f
+      val t: T = f
       c.commit()
       t
     } catch {
